@@ -1,6 +1,30 @@
 import {v4 as uuidv4} from 'uuid';
-import {message, Avatar, Button, Typography, Divider, Popconfirm, Row, Col, Comment, Card, Image, Modal, Form, Input, Alert, AutoComplete} from "antd";
-import {QuestionCircleOutlined} from '@ant-design/icons';
+import {
+    message,
+    Avatar,
+    Button,
+    Typography,
+    Divider,
+    Popconfirm,
+    Row,
+    Col,
+    Comment,
+    Card,
+    Image,
+    Modal,
+    Form,
+    Input,
+    Alert,
+    AutoComplete
+} from "antd";
+import {
+    QuestionCircleOutlined,
+    LikeFilled,
+    DislikeFilled,
+    StarFilled,
+    PlusCircleFilled,
+    CloseCircleFilled
+} from '@ant-design/icons';
 import $ from 'jquery';
 import ReactQuill from "react-quill";
 import React from "react";
@@ -24,6 +48,7 @@ function initUsers() {
     localStorage.setItem(POST_DATABASE, JSON.stringify(posts));
     localStorage.setItem(REPLY_DATABASE, JSON.stringify(replys));
 }
+
 // Initialise
 
 // creating
@@ -36,18 +61,18 @@ function createUsers(username, password, email) {
     let month = months[d.getMonth()];
     let year = d.getFullYear();
     const JoinDate = `${day} ${date} ${month} ${year}`;
-    const id =generateId();
+    const id = generateId();
     const user =
         {
             username: username,
             password: password,
             email: email,
             JoinDate: JoinDate,
-            mfaStatus : false,
+            mfaStatus: false,
             mfaQuestion: "",
             mfaAnswer: "",
-            id: id        
-         };
+            id: id
+        };
 
     const users = getUsers();
     users.push(user);
@@ -55,51 +80,55 @@ function createUsers(username, password, email) {
     localStorage.setItem(USER_KEY, JSON.stringify(id));
     return id;
 }
-function createPost(userId, text, images){
+
+function createPost(userId, text, images) {
     const posts = getPosts();
-    const postData =[text];
-    for(const image of images){
+    const postData = [text];
+    for (const image of images) {
         postData.push(image);
     }
     const d = new Date();
     let date = d.getDate()
     let month = d.getMonth();
     let year = d.getFullYear();
-    let hour=d.getHours();
-    let minutes=d.getMinutes()
+    let hour = d.getHours();
+    let minutes = d.getMinutes()
     const post_time = `${year}-${month}-${date} ${hour}:${minutes}`;
     const post =
         {
-            userId : userId,
-            postId : generateId(),
+            userId: userId,
+            postId: generateId(),
             post_data: postData,
-            post_time:post_time
+            post_time: post_time
         };
     posts.push(post);
     localStorage.setItem(POST_DATABASE, JSON.stringify(posts));
 }
-function createReply(userId, parentId,text){
+
+function createReply(userId, parentId, text) {
     const replys = getReplys();
     const d = new Date();
     let date = d.getDate()
     let month = d.getMonth();
     let year = d.getFullYear();
-    let hour=d.getHours();
-    let minutes=d.getMinutes()
+    let hour = d.getHours();
+    let minutes = d.getMinutes()
     const reply_time = `${year}-${month}-${date} ${hour}:${minutes}`;
     const reply = {
-        userId : userId,
+        userId: userId,
         parentId: parentId,
-        replyId : generateId(),
-        reply_data:text,
-        reply_time:reply_time
+        replyId: generateId(),
+        reply_data: text,
+        reply_time: reply_time
     }
     replys.push(reply);
     localStorage.setItem(REPLY_DATABASE, JSON.stringify(replys));
 }
-function generateId(){
+
+function generateId() {
     return uuidv4();
 }
+
 // creating
 
 // getter setter delete
@@ -118,6 +147,7 @@ function getPosts() {
     // Convert data to objects.
     return JSON.parse(data);
 }
+
 function getReplys() {
     // Extract reply data from local storage.
     const data = localStorage.getItem(REPLY_DATABASE);
@@ -127,11 +157,11 @@ function getReplys() {
 }
 
 
-function getUserName(id){
+function getUserName(id) {
     const users = getUsers();
-    if (users[0]===undefined){
+    if (users[0] === undefined) {
         return null;
-    }else{
+    } else {
         for (const user of users) {
             if (id === user.id) {
                 return user.username;
@@ -182,13 +212,13 @@ function removeUser() {
     localStorage.removeItem(USER_KEY);
 }
 
-function getNameByReplyId(id){
+function getNameByReplyId(id) {
     const users = getUsers();
-    const replys =getReplys();
-    let userId="";
+    const replys = getReplys();
+    let userId = "";
     for (const reply of replys) {
         if (id === reply.replyId) {
-            userId=reply.userId;
+            userId = reply.userId;
         }
     }
     for (const user of users) {
@@ -240,11 +270,12 @@ function deleteAccount(id) {
     localStorage.setItem(USERS_KEY, JSON.stringify(newUsers));
     removeUser();
 }
+
 // getter setter delete
 
 // ============================================================== MFA ===============================
-function setMFA(id, mfaQuestion, mfaAnswer){
-    if(id !== "" && mfaQuestion !== "" && mfaAnswer !== ""){
+function setMFA(id, mfaQuestion, mfaAnswer) {
+    if (id !== "" && mfaQuestion !== "" && mfaAnswer !== "") {
         const users = getUsers();
         for (const user of users) {
             if (id === user.id) {
@@ -258,13 +289,13 @@ function setMFA(id, mfaQuestion, mfaAnswer){
         return "Username props error, please refresh the page. (msg: no usr found)";
 
     } else {
-        if(mfaQuestion === ""){
+        if (mfaQuestion === "") {
             return "Question should not be empty";
 
-        } else if (mfaAnswer === ""){
+        } else if (mfaAnswer === "") {
             return "Answer should not be empty, case sensitive";
 
-        } else if (id === ""){
+        } else if (id === "") {
             return "ID props error, please refresh the page. (msg: no usr input)";
 
         }
@@ -273,15 +304,15 @@ function setMFA(id, mfaQuestion, mfaAnswer){
 }
 
 
-function getMFA(id){
+function getMFA(id) {
     var result = [];
-    if(id !== ""){
+    if (id !== "") {
         const users = getUsers();
         for (const user of users) {
             if (id === user.id) {
                 result["mfaStatus"] = user.mfaStatus;
                 result["mfaQuestion"] = user.mfaQuestion;
-                if(user.mfaAnswer != null){
+                if (user.mfaAnswer != null) {
                     result["mfaAnswer"] = true;
                 }
                 return result;
@@ -294,8 +325,8 @@ function getMFA(id){
     }
 }
 
-function getMFAStatus(id){
-    if(id !== ""){
+function getMFAStatus(id) {
+    if (id !== "") {
         const users = getUsers();
         for (const user of users) {
             if (id === user.id) {
@@ -313,13 +344,13 @@ function getMFAStatus(id){
     }
 }
 
-function verifyMFAAnswer(id, mfaAnswer){
-    if(id !== "" && mfaAnswer!== ""){
+function verifyMFAAnswer(id, mfaAnswer) {
+    if (id !== "" && mfaAnswer !== "") {
         const users = getUsers();
         for (const user of users) {
             if (id === user.id) {
-                if(user.mfaStatus === true){
-                    if(user.mfaAnswer === mfaAnswer){
+                if (user.mfaStatus === true) {
+                    if (user.mfaAnswer === mfaAnswer) {
                         return true;
                     } else {
                         return "MFA answer Incorrect, not authorised, please try again!";
@@ -341,31 +372,32 @@ function verifyMFAAnswer(id, mfaAnswer){
         }
     }
 }
+
 // ============================================================== MFA ===============================
 
 // generate post and reply depends on local storage database
-function printPost(handleReplySubmit, handleReplyOnClick){
-    const {TextArea} = Input;
-
+function printPost(handleReplySubmit, handleReplyOnClick, handleReactionSubmit, handleFollowSubmit) {
     let print = [];
-    const posts=getPosts();
+    const posts = getPosts();
     for (const post of posts) {
         const id = post.userId;
+        const post_id = post.postId;
         // generate image tags depends on local storage
-        const images =[];
-        let i=1;
-        while(i<post.post_data.length){
-            let URL=post.post_data[i].url;
+        const images = [];
+        let i = 1;
+        while (i < post.post_data.length) {
+            let URL = post.post_data[i].url;
             images.push(<Image className={"center-cropped"} width={"12vh"} src={URL}/>)
             i++;
         }
         print.push(
             <Card style={{width: "100%", marginTop: "12px"}}>
-            <Comment
-                actions={[
-                    <div>
-                        <span key="comment-nested-reply-to" onClick={handleReplyOnClick} style={{cursor: "pointer"}}>
-                            Reply post
+                <Comment
+                    actions={[
+                        <div>
+                        <span key="comment-nested-reply-to" className={"reply"} onClick={handleReplyOnClick}
+                              style={{cursor: "pointer"}}>
+                            Reply
                             <replyinput style={{display: "none"}}>
                                 <Comment
                                     avatar={
@@ -382,12 +414,15 @@ function printPost(handleReplySubmit, handleReplyOnClick){
                                             <Form.Item>
 
                                                 {/*TODO -------------------------------------------------------------------------------*/}
-                                                <ReactQuill id="postTextItem" theme="snow" placeholder={"Write a post..."}></ReactQuill>
+                                                <ReactQuill id="postTextItem" theme="snow"
+                                                            placeholder={"Write a post..."}></ReactQuill>
                                                 {/*TODO -------------------------------------------------------------------------------*/}
 
                                             </Form.Item>
                                             <Form.Item>
-                                                <Button htmlType="submit" style={{marginTop: "10px"}} parentId={post.postId} onClick={handleReplySubmit} type="primary">Reply</Button>
+                                                <Button htmlType="submit" style={{marginTop: "10px"}}
+                                                        parentId={post.postId} onClick={handleReplySubmit}
+                                                        type="primary">Reply</Button>
                                             </Form.Item>
                                         </div>
                                     }
@@ -395,121 +430,151 @@ function printPost(handleReplySubmit, handleReplyOnClick){
                                 </Comment>
                             </replyinput>
                         </span>
-                    </div>
-                ]}
-                author={<a>{getUserName(id)}</a>}
-                avatar={<Avatar alt={getUserName(id)} className={"postAvatar"} size="default" style={{
-                    backgroundColor: "#f56a00",
-                    verticalAlign: 'middle',
-                    fontSize: '17px'
-                }}>
-                    {JSON.stringify(getUserName(id)).charAt(1).toUpperCase()}
-                </Avatar>}
-                content={
-                    <div>
-                        <p>
-                            {post.post_data[0]}
-                        </p>
-                        <div className={"postImageGroup"}>
-                            {images}
+                            <br/><br/>
+                            <span className={"reaction reaction-like"} style={{cursor: "pointer"}} reaction={"like"}
+                                  target_id={post_id} target_type={"post"} onClick={handleReactionSubmit}><LikeFilled/>  Like(x)</span>
+                            <span className={"reaction reaction-dislike"} style={{cursor: "pointer"}}
+                                  reaction={"dislike"} target_id={post_id} target_type={"post"}
+                                  onClick={handleReactionSubmit}><DislikeFilled/>  Dislike(x)</span>
+                            <span className={"reaction reaction-star"} style={{cursor: "pointer"}} reaction={"star"}
+                                  target_id={post_id} target_type={"post"} onClick={handleReactionSubmit}><StarFilled/>  Star(x)</span>
+
                         </div>
-                    </div>
-                }
-                datetime={
-                    post.post_time
-                }
-            >
-                {printPostReplys(post.postId,handleReplyOnClick, handleReplySubmit)}
-            </Comment>
-            </Card>
-            );
-    }
-    return <div>{print}</div>;
-}
-
-function printProfilePost(id, editPostOnClick, deletePost, handleEditPost){
-    let print = [];
-    const posts=getPosts();
-    for (const post of posts) {
-        const images =[];
-        let i=1;
-        while(i<post.post_data.length){
-            let URL=post.post_data[i].url;
-            images.push(<Image className={"center-cropped"} width={"12vh"} src={URL}/>)
-            i++;
-        }
-        if (post.userId===id){
-            print.push(
-                <Card style={{width: "100%", marginTop: "12px"}}>
-            <Comment
-                actions={[
-                    <span className={"clickable-text"} key="comment-nested-reply-to" onClick={editPostOnClick}>Edit post</span>,
-                    <Popconfirm
-                        title={<div><p>You sure you want to delete this post?</p><input type={"hidden"} name="postId" value={post.postId}></input></div>}
-                        icon={
-                            <QuestionCircleOutlined
-                                style={{
-                                    color: 'red',
-                                }}
-                            />
-                        }
-                        onConfirm={deletePost}
-                        placement="bottom"
-                        okText="Delete Forever!"
-                        cancelText="No"
-                    >
-                        <span className={"danger-text"} key="comment-nested-reply-to" type="danger">Delete post</span>
-
-                    </Popconfirm>
-                ]}
-                author={<a>{getUserName(id)}</a>}
-                avatar={<Avatar alt={getUserName(id)} className={"postAvatar"} size="default" style={{
-                    backgroundColor: "#f56a00",
-                    verticalAlign: 'middle',
-                    fontSize: '17px'
-                }}>
-                    {JSON.stringify(getUserName(id)).charAt(1).toUpperCase()}
-                </Avatar>}
-                content={
-                    <div>
-                        <div className={"postText"}>
+                    ]}
+                    author={<a>{getUserName(id)}</a>}
+                    avatar={<Avatar alt={getUserName(id)} className={"postAvatar"} size="default" style={{
+                        backgroundColor: "#f56a00",
+                        verticalAlign: 'middle',
+                        fontSize: '17px'
+                    }}>
+                        {JSON.stringify(getUserName(id)).charAt(1).toUpperCase()}
+                    </Avatar>}
+                    content={
+                        <div>
                             <p>
                                 {post.post_data[0]}
                             </p>
-                            {/*// TODO ------------------------------------------------------------------------------------------*/}
-                            <ReactQuill theme="snow" placeholder={"Write a post..."} style={{display:"none"}} value={post.post_data[0]}/>
-                            {/*// TODO ------------------------------------------------------------------------------------------*/}
-                            <Button type="primary" postId={post.postId} onClick={handleEditPost} style={{marginTop: "20px", display: "none"}}>Save changes</Button>
+                            <div className={"postImageGroup"}>
+                                {images}
+                            </div>
                         </div>
-                        <div className={"postImageGroup"}>
-                        {images}
+                    }
+                    datetime={
+                        <div>
+                            <div style={{display: "flex"}}>{post.post_time}
+                                {/* TODO: if have follow this user, display this*/}
+                                {/*<div className={"follow-btn has-follow"} style={{position: "absolute", right: 0, top: 0}}*/}
+                                {/*     user_id={id} action={"unfollow"} username={getUserName(id)} onClick={handleFollowSubmit}><CloseCircleFilled/> Unfollow*/}
+                                {/*</div>*/}
+
+                                {/* TODO: if have not follow this user, display this*/}
+                                <div className={"follow-btn"} style={{position: "absolute", right: 0, top: 0}}
+                                    user_id={id} action={"follow"} username={getUserName(id)} onClick={handleFollowSubmit}><PlusCircleFilled />  Follow @{getUserName(id)}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                }
-                datetime={
-                    post.post_time
-                }
-            >
-                {printProfileReplys(post.postId)}
-            </Comment>
-        </Card>
+                    }
+                >
+                    {printPostReplys(post.postId, handleReplyOnClick, handleReplySubmit, handleReactionSubmit)}
+                </Comment>
+            </Card>
+        );
+    }
+    return <div>{print}</div>;
+}
+
+function printProfilePost(id, editPostOnClick, deletePost, handleEditPost) {
+    let print = [];
+    const posts = getPosts();
+    for (const post of posts) {
+        const images = [];
+        let i = 1;
+        while (i < post.post_data.length) {
+            let URL = post.post_data[i].url;
+            images.push(<Image className={"center-cropped"} width={"12vh"} src={URL}/>)
+            i++;
+        }
+        if (post.userId === id) {
+            print.push(
+                <Card style={{width: "100%", marginTop: "12px"}}>
+                    <Comment
+                        actions={[
+                            <span className={"clickable-text"} key="comment-nested-reply-to" onClick={editPostOnClick}>Edit post</span>,
+                            <Popconfirm
+                                title={<div><p>You sure you want to delete this post?</p><input type={"hidden"}
+                                                                                                name="postId"
+                                                                                                value={post.postId}></input>
+                                </div>}
+                                icon={
+                                    <QuestionCircleOutlined
+                                        style={{
+                                            color: 'red',
+                                        }}
+                                    />
+                                }
+                                onConfirm={deletePost}
+                                placement="bottom"
+                                okText="Delete Forever!"
+                                cancelText="No"
+                            >
+                                <span className={"danger-text"} key="comment-nested-reply-to"
+                                      type="danger">Delete post</span>
+
+                            </Popconfirm>
+                        ]}
+                        author={<a>{getUserName(id)}</a>}
+                        avatar={<Avatar alt={getUserName(id)} className={"postAvatar"} size="default" style={{
+                            backgroundColor: "#f56a00",
+                            verticalAlign: 'middle',
+                            fontSize: '17px'
+                        }}>
+                            {JSON.stringify(getUserName(id)).charAt(1).toUpperCase()}
+                        </Avatar>}
+                        content={
+                            <div>
+                                <div className={"postText"}>
+                                    <p>
+                                        {post.post_data[0]}
+                                    </p>
+                                    {/*// TODO ------------------------------------------------------------------------------------------*/}
+                                    <ReactQuill theme="snow" placeholder={"Write a post..."} style={{display: "none"}}
+                                                value={post.post_data[0]}/>
+                                    {/*// TODO ------------------------------------------------------------------------------------------*/}
+                                    <Button type="primary" postId={post.postId} onClick={handleEditPost}
+                                            style={{marginTop: "20px", display: "none"}}>Save changes</Button>
+                                </div>
+                                <div className={"postImageGroup"}>
+                                    {images}
+                                </div>
+                            </div>
+                        }
+                        datetime={
+                            post.post_time
+                        }
+                    >
+                        {printProfileReplys(post.postId)}
+                    </Comment>
+                </Card>
             );
         }
     }
     return <div>{print}</div>;
 }
-function printPostReplys(parentId, handleReplyOnClick, handleReplySubmit){
-    const {TextArea} = Input;
-    const replys=getReplys();
+
+function printPostReplys(parentId, handleReplyOnClick, handleReplySubmit, handleReactionSubmit) {
+    const replys = getReplys();
     let print = [];
     for (const reply of replys) {
-        if (reply.parentId===parentId){
-            const name=getNameByReplyId(reply.replyId);
+        if (reply.parentId === parentId) {
+            const name = getNameByReplyId(reply.replyId);
+            const reply_id = reply.replyId;
+
             print.push(<Comment
                 actions={[
                     <div>
-                            <span key="comment-nested-reply-to" onClick={handleReplyOnClick} style={{cursor: "pointer"}}>
-                                Reply post
+                            <span key="comment-nested-reply-to" onClick={handleReplyOnClick} className={"reply"}
+                                  style={{cursor: "pointer"}}>
+                                Reply
                                 <replyinput style={{display: "none"}}>
                                     <Comment
                                         avatar={
@@ -525,10 +590,14 @@ function printPostReplys(parentId, handleReplyOnClick, handleReplySubmit){
                                             <div className={"reply-input-box"}>
                                                 <Form.Item>
                                                     {/*// TODO ------------------------------------------------------------------------------------------*/}
-                                                    <ReactQuill id="postTextItem" theme="snow" placeholder={"Write a post..."}/>
-                                                    {/*// TODO ------------------------------------------------------------------------------------------*/}                                                </Form.Item>
+                                                    <ReactQuill id="postTextItem" theme="snow"
+                                                                placeholder={"Write a post..."}/>
+                                                    {/*// TODO ------------------------------------------------------------------------------------------*/}
+                                                </Form.Item>
                                                 <Form.Item>
-                                                    <Button htmlType="submit" style={{marginTop: "10px"}} parentId={reply.replyId} onClick={handleReplySubmit} type="primary">Reply</Button>
+                                                    <Button htmlType="submit" style={{marginTop: "10px"}}
+                                                            parentId={reply.replyId} onClick={handleReplySubmit}
+                                                            type="primary">Reply</Button>
                                                 </Form.Item>
                                             </div>
                                         }
@@ -536,6 +605,13 @@ function printPostReplys(parentId, handleReplyOnClick, handleReplySubmit){
                                     </Comment>
                                 </replyinput>
                             </span>
+                        <br/><br/>
+                        <span className={"reaction reaction-like"} style={{cursor: "pointer"}} reaction={"like"}
+                              target_id={reply_id} target_type={"reply"} onClick={handleReactionSubmit}><LikeFilled/>  Like(x)</span>
+                        <span className={"reaction reaction-dislike"} style={{cursor: "pointer"}} reaction={"dislike"}
+                              target_id={reply_id} target_type={"reply"} onClick={handleReactionSubmit}><DislikeFilled/>  Dislike(x)</span>
+                        <span className={"reaction reaction-star"} style={{cursor: "pointer"}} reaction={"star"}
+                              target_id={reply_id} target_type={"reply"} onClick={handleReactionSubmit}><StarFilled/>  Star(x)</span>
                     </div>
                 ]}
                 author={<a>{name}</a>}
@@ -547,25 +623,25 @@ function printPostReplys(parentId, handleReplyOnClick, handleReplySubmit){
                     }}>
                         {JSON.stringify(name).charAt(1).toUpperCase()}
                     </Avatar>
-                }                content={
-                    <p>
-                        {reply.reply_data}
-                    </p>
-                }
+                } content={
+                <p>
+                    {reply.reply_data}
+                </p>
+            }
             >
-                {printPostReplys(reply.replyId, handleReplyOnClick, handleReplySubmit)}
+                {printPostReplys(reply.replyId, handleReplyOnClick, handleReplySubmit, handleReactionSubmit)}
             </Comment>)
         }
     }
     return <div>{print}</div>;
 }
 
-function printProfileReplys(parentId){
-    const replys=getReplys();
+function printProfileReplys(parentId) {
+    const replys = getReplys();
     let print = [];
     for (const reply of replys) {
-        if (reply.parentId===parentId){
-            const name=getNameByReplyId(reply.replyId);
+        if (reply.parentId === parentId) {
+            const name = getNameByReplyId(reply.replyId);
             print.push(<Comment
                 author={<a>{name}</a>}
                 avatar={
@@ -576,11 +652,11 @@ function printProfileReplys(parentId){
                     }}>
                         {JSON.stringify(name).charAt(1).toUpperCase()}
                     </Avatar>
-                }                content={
-                    <p>
-                        {reply.reply_data}
-                    </p>
-                }
+                } content={
+                <p>
+                    {reply.reply_data}
+                </p>
+            }
             >
                 {printProfileReplys(reply.replyId)}
             </Comment>)
@@ -588,6 +664,7 @@ function printProfileReplys(parentId){
     }
     return <div>{print}</div>;
 }
+
 export {
     getReplys,
     createReply,
