@@ -19,6 +19,7 @@ const Profile = (props) => {
     const [Email, setEmail] = useState(getEmail(props.id));
     const [Name, setName] = useState(getUserName(props.id));
     const date = getJoinDate((props.id));
+    //delete account
     const confirmSelected = () => {
         deleteAccount(props.id);
         props.logoutUser();
@@ -40,7 +41,7 @@ const Profile = (props) => {
             content: 'Account deleted! You are now logout.',
         });
     };
-
+    // when user account delete, call this function to delete this user's reply message
     function deleteReplied(userId){
         const replys=getReplys();
         const newReplys=[];

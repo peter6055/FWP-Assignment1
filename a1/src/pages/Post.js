@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Avatar,
     Card,
@@ -31,6 +31,7 @@ const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 
 const Post = (props) => {
+
     const handleReplyOnClick = (e) => {
         var currentReplyInputDisplay = $(e.target).children().css("display")
 
@@ -81,7 +82,13 @@ const Post = (props) => {
 
 
     // ============================================================== Make Post ===============================
-    const [value, setValue] = useState('');
+    const [fileList, setFileList] = useState([]);
+
+    useEffect(() => {
+        // Update the document title using the browser API
+        console.log(fileList);
+    },[fileList]);
+
     const MakePostElement = () => (
         <Card style={{width: "100%"}}>
             <Comment
@@ -142,7 +149,8 @@ const Post = (props) => {
     );
 
     // upload file
-    const [fileList, setFileList] = useState([]);
+    const [forceRendering, setForceStatus] = useState(0);
+
     let url;
     const handleFileUpload = (e) => {
         console.log(e);
@@ -164,7 +172,7 @@ const Post = (props) => {
 
         // because render.onLoad will fire onChange three times
         // this is to push the images only in the first time
-        if (status === "uploading" && event === undefined) {
+        if (status === "uploading" && e.event === undefined) {
             reader.onload = function (e) {
 
                 var result = upload(fileUploadName, reader.result, type);
@@ -174,8 +182,10 @@ const Post = (props) => {
                     url = 'https://s3789585.s3.ap-southeast-2.amazonaws.com/fwp-a1/' + fileUploadName
 
                     setTimeout(function() {
-                        fileList.push({"uid": uid, "name": name, "status": "done", "url": url})
-                    }, 2500);
+                        fileList.push({"uid": uid, "name": name, "status": "done", "url": url});
+                    }, 500);
+
+                    // setForceStatus(forceRendering + 1);
 
                 } else {
                     alert("AWS upload promise issue");
@@ -187,6 +197,12 @@ const Post = (props) => {
         } else if(status === "error"){
             // when end, hide loading state
             $("#upload-loading-spinner").css("display", "none");
+
+            // re-render after finish to flush the image display from s3
+            // avoid the list push faster than s3 upload finalise
+            setTimeout(function() {
+                setForceStatus(forceRendering+1);
+            }, 1500);
 
         }
     }

@@ -9,8 +9,8 @@ const USERS_KEY = "users";
 const USER_KEY = "user";
 const POST_DATABASE = "posts";
 const REPLY_DATABASE = "replys";
-
-// Initialise local storage "users" with data, if the data is already set this function returns immediately.
+//!!! we use some code from week3 lec example 10 as start code like initUsers verifyUser getter setter functions.!!!
+// Initialise local storage with empty data, if the data is already set this function returns immediately.
 function initUsers() {
     // Stop if data is already initialised.
     if (localStorage.getItem(USERS_KEY) !== null)
@@ -342,6 +342,8 @@ function verifyMFAAnswer(id, mfaAnswer){
     }
 }
 // ============================================================== MFA ===============================
+
+// generate post and reply depends on local storage database
 function printPost(handleReplySubmit, handleReplyOnClick){
     const {TextArea} = Input;
 
@@ -349,6 +351,7 @@ function printPost(handleReplySubmit, handleReplyOnClick){
     const posts=getPosts();
     for (const post of posts) {
         const id = post.userId;
+        // generate image tags depends on local storage
         const images =[];
         let i=1;
         while(i<post.post_data.length){
