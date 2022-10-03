@@ -66,6 +66,10 @@ a {
     width: 100%;
 }
 
+.ql-editor {
+    height: 100px !important;
+}
+
 .logo {
     margin: 10px;
 }

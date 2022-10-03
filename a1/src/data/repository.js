@@ -2,6 +2,8 @@ import {v4 as uuidv4} from 'uuid';
 import {message, Avatar, Button, Typography, Divider, Popconfirm, Row, Col, Comment, Card, Image, Modal, Form, Input, Alert, AutoComplete} from "antd";
 import {QuestionCircleOutlined} from '@ant-design/icons';
 import $ from 'jquery';
+import ReactQuill from "react-quill";
+import React from "react";
 
 const USERS_KEY = "users";
 const USER_KEY = "user";
@@ -53,7 +55,6 @@ function createUsers(username, password, email) {
     localStorage.setItem(USER_KEY, JSON.stringify(id));
     return id;
 }
-
 function createPost(userId, text, images){
     const posts = getPosts();
     const postData =[text];
@@ -96,7 +97,6 @@ function createReply(userId, parentId,text){
     replys.push(reply);
     localStorage.setItem(REPLY_DATABASE, JSON.stringify(replys));
 }
-
 function generateId(){
     return uuidv4();
 }
@@ -344,6 +344,7 @@ function verifyMFAAnswer(id, mfaAnswer){
 // ============================================================== MFA ===============================
 function printPost(handleReplySubmit, handleReplyOnClick){
     const {TextArea} = Input;
+
     let print = [];
     const posts=getPosts();
     for (const post of posts) {
@@ -376,7 +377,11 @@ function printPost(handleReplySubmit, handleReplyOnClick){
                                     content={
                                         <div className={"reply-input-box"}>
                                             <Form.Item>
-                                                <TextArea rows={2} placeholder={"Write a reply..."}/>
+
+                                                {/*TODO -------------------------------------------------------------------------------*/}
+                                                <ReactQuill id="postTextItem" theme="snow" placeholder={"Write a post..."}></ReactQuill>
+                                                {/*TODO -------------------------------------------------------------------------------*/}
+
                                             </Form.Item>
                                             <Form.Item>
                                                 <Button htmlType="submit" style={{marginTop: "10px"}} parentId={post.postId} onClick={handleReplySubmit} type="primary">Reply</Button>
@@ -466,8 +471,11 @@ function printProfilePost(id, editPostOnClick, deletePost, handleEditPost){
                     <div>
                         <div className={"postText"}>
                             <p>
-                            {post.post_data[0]}
+                                {post.post_data[0]}
                             </p>
+                            {/*// TODO ------------------------------------------------------------------------------------------*/}
+                            <ReactQuill theme="snow" placeholder={"Write a post..."} style={{display:"none"}} value={post.post_data[0]}/>
+                            {/*// TODO ------------------------------------------------------------------------------------------*/}
                             <Button type="primary" postId={post.postId} onClick={handleEditPost} style={{marginTop: "20px", display: "none"}}>Save changes</Button>
                         </div>
                         <div className={"postImageGroup"}>
@@ -488,7 +496,6 @@ function printProfilePost(id, editPostOnClick, deletePost, handleEditPost){
     return <div>{print}</div>;
 }
 function printPostReplys(parentId, handleReplyOnClick, handleReplySubmit){
-    console.log(parentId);
     const {TextArea} = Input;
     const replys=getReplys();
     let print = [];
@@ -514,8 +521,9 @@ function printPostReplys(parentId, handleReplyOnClick, handleReplySubmit){
                                         content={
                                             <div className={"reply-input-box"}>
                                                 <Form.Item>
-                                                    <TextArea rows={2} placeholder={"Write a reply..."}/>
-                                                </Form.Item>
+                                                    {/*// TODO ------------------------------------------------------------------------------------------*/}
+                                                    <ReactQuill id="postTextItem" theme="snow" placeholder={"Write a post..."}/>
+                                                    {/*// TODO ------------------------------------------------------------------------------------------*/}                                                </Form.Item>
                                                 <Form.Item>
                                                     <Button htmlType="submit" style={{marginTop: "10px"}} parentId={reply.replyId} onClick={handleReplySubmit} type="primary">Reply</Button>
                                                 </Form.Item>

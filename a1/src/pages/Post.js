@@ -20,13 +20,17 @@ import $ from 'jquery';
 import {getUserName, createPost, printPost, createReply} from "../data/repository";
 import {upload} from "../data/aws";
 
+// TODO ------------------------------------------------------------------------------------------
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+// TODO ------------------------------------------------------------------------------------------
+
 
 const {TextArea} = Input;
 const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 
 const Post = (props) => {
-
     const handleReplyOnClick = (e) => {
         var currentReplyInputDisplay = $(e.target).children().css("display")
 
@@ -37,13 +41,20 @@ const Post = (props) => {
             $(e.target).children().css({display: "none"});
         }
     };
+
     const handleReplySubmit = (e) => {
-        //this is the value of input textarea
-        const text=$(e.target).closest('.ant-comment-content-detail').find('textarea').val();
-        console.log(text);
-        if (text.length>200 || !text){
+
+
+        {/*TODO -------------------------------------------------------------------------------*/}
+        // this is text of post
+        const text = $(e.target).closest('.reply-input-box').find('.ql-editor')[0].innerHTML;
+        const text_length = $(e.target).closest('.reply-input-box').find('.ql-editor')[0].innerText.length;
+        {/*TODO -------------------------------------------------------------------------------*/}
+
+        // frocen: this a new way to detect word limit due to formatted text implementation
+        if (text_length > 600 || !text){
             message.error({
-                content: 'Reply message can not be empty or exceed 250 characters',
+                content: 'Reply message can not be empty or exceed 600 characters',
             });
             return
         }
@@ -59,7 +70,7 @@ const Post = (props) => {
 
         // after successful reply
         // hide reply input
-        $(e.target).closest("replyinput").css({display: "none"});
+        $(e.target).closest('replyinput').css({display: "none"});
 
         setPostData(printPost(handleReplySubmit, handleReplyOnClick));
     }
@@ -70,6 +81,7 @@ const Post = (props) => {
 
 
     // ============================================================== Make Post ===============================
+    const [value, setValue] = useState('');
     const MakePostElement = () => (
         <Card style={{width: "100%"}}>
             <Comment
@@ -85,7 +97,10 @@ const Post = (props) => {
                 content={
                     <div>
                         <Form.Item>
-                            <TextArea id="postTextItem" rows={4} placeholder={"Write a post..."}/>
+                            {/*TODO -------------------------------------------------------------------------------*/}
+                            <ReactQuill id="postTextItem" theme="snow" placeholder={"Write a post..."}/>
+                            {/*TODO -------------------------------------------------------------------------------*/}
+
                         </Form.Item>
                         <Form.Item>
                             <Upload
@@ -211,11 +226,18 @@ const Post = (props) => {
 
     // onclick make a post
     const handleSubmitPost = () => {
+
+        {/*TODO -------------------------------------------------------------------------------*/}
         // this is text of post
-        const text = document.getElementById("postTextItem").value;
-        if (text.length>200 || !text){
+        const text = document.getElementById("postTextItem").getElementsByTagName('div')[1].getElementsByClassName("ql-editor")[0].innerHTML;
+        const text_length = document.getElementById("postTextItem").getElementsByTagName('div')[1].getElementsByClassName("ql-editor")[0].innerText.length;
+        {/*TODO -------------------------------------------------------------------------------*/}
+
+
+        // frocen: this a new way to detect word limit due to formatted text implementation
+        if (text_length > 600 || !text){
             message.error({
-                content: 'Post message can not be empty or exceed 250 characters',
+                content: 'Post message can not be empty or exceed 600 characters',
             });
             return
         }

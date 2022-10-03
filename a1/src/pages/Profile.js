@@ -6,6 +6,12 @@ import {useNavigate} from 'react-router-dom';
 import {changeEmail, getPosts,getReplys,changeName, getEmail, getJoinDate, deleteAccount ,getUserName, setMFA, getMFA, printProfilePost} from "../data/repository";
 import $ from "jquery";
 
+// TODO ------------------------------------------------------------------------------------------
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+// TODO ------------------------------------------------------------------------------------------
+
+
 const {Text, Paragraph} = Typography;
 
 const Profile = (props) => {
@@ -72,9 +78,10 @@ const Profile = (props) => {
 
         // hide read only and add a textarea
         $(e.target).closest('.ant-comment-content').find('.postText > p').css({display: "none"})
-        $(e.target).closest('.ant-comment-content').find('.postText').prepend('' +
-            '<textarea class="ant-input" rows="4" style="width: 100%">' + currentPostText + '</textarea>'
-        );
+
+        {/*// TODO ------------------------------------------------------------------------------------------*/}
+        $(e.target).closest('.ant-comment-content').find('.postText > .quill ').css({display: "inline"});
+        {/*// TODO ------------------------------------------------------------------------------------------*/}
 
         // add a save btn after the content text
         $(e.target).closest('.ant-comment-content').find('.postText > button').css({display: "inline"});
@@ -86,13 +93,20 @@ const Profile = (props) => {
 
     function handleEditPost(e){
         // get post id
-        const id=$(e.target).closest(".postText").find('button').attr( "postId");
+        const id=$(e.target).closest(".postText > button").attr( "postId");
 
-        // this is the value user type
-        const newText = $(e.target).closest('.ant-comment-content').find('.postText > textarea').val();
-        if (newText.length>200 || !newText){
+        {/*TODO -------------------------------------------------------------------------------*/}
+        // this is text of post
+        const newText = $(e.target).closest('.ant-comment-content').find('.postText > .quill ').find('.ql-editor')[0].innerHTML;
+        const newText_length = $(e.target).closest('.ant-comment-content').find('.postText > .quill ').find('.ql-editor')[0].innerText.length;
+        {/*TODO -------------------------------------------------------------------------------*/}
+
+        console.log(id);
+
+        // frocen: this a new way to detect word limit due to formatted text implementation
+        if (newText_length > 600 || !newText){
             message.error({
-                content: 'Post message can not be empty or exceed 250 characters',
+                content: 'Post message can not be empty or exceed 600 characters',
             });
             return
         }
@@ -100,7 +114,7 @@ const Profile = (props) => {
         const posts=getPosts();
         for(const post of posts){
             if (post.postId===id){
-                post.post_data[0]=newText;
+                post.post_data[0] = newText;
             }
         }
 
@@ -109,8 +123,9 @@ const Profile = (props) => {
 
         // recover to non-editable mode
         // remove text area
-        $(e.target).closest('.ant-comment-content').find('.postText > textarea').remove();
-
+        {/*// TODO ------------------------------------------------------------------------------------------*/}
+        $(e.target).closest('.ant-comment-content').find('.postText > .quill ').css({display: "none"});
+        {/*// TODO ------------------------------------------------------------------------------------------*/}
         // show read only text
         $(e.target).closest('.ant-comment-content').find('.postText > p').css({display: "inline"})
 
@@ -278,10 +293,11 @@ const Profile = (props) => {
                             {Email}
                         </Paragraph>
 
-                        <Button type="primary" onClick={showModal}>Setup MFA</Button>
-                        <MFAModal></MFAModal>
-                        <br/>
-                        <br/>
+                        {/*MFA not in use*/}
+                        {/*<Button type="primary" onClick={showModal}>Setup MFA</Button>*/}
+                        {/*<MFAModal></MFAModal>*/}
+                        {/*<br/>*/}
+                        {/*<br/>*/}
                         <Text type="secondary">{date}</Text>
                         <br/>
                         <br/>
