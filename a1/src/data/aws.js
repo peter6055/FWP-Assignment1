@@ -6,8 +6,8 @@ const BUCKET_NAME = "s3789585";
 
 // for sandbox environment only, using .env or system env value instead of hard coded on production environment
 var config = new AWS.Config({
-    accessKeyId: 'AKIAZMHO7LWEOSMHLWEP',
-    secretAccessKey: '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',
+    accessKeyId: '',
+    secretAccessKey: '',
     region: 'ap-southeast-2'
 });
 
